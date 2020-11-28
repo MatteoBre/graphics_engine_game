@@ -3,6 +3,7 @@
 #include <iostream>
 #include "ModelData.h"
 #include "Node.h"
+#include "Camera.h"
 
 // OpenGL includes
 #include <GL/glew.h>
@@ -13,8 +14,14 @@
 #include <assimp/scene.h> // collects data
 #include <assimp/postprocess.h> // various extra operations
 
+// GLM Mathemtics
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 GLuint GraphicsEngine::shaderProgramID = 0;
 Node* GraphicsEngine::root = NULL;
+Camera GraphicsEngine::camera = Camera{};
 
 mat4 computeMatrix(std::vector<mat4> matrixHierarchy) {
 	mat4 result = identity_mat4();
@@ -36,6 +43,14 @@ void drawTree(Node* root, std::vector<mat4> matrixHierarchy) {
 	matrixHierarchy.pop_back();
 }
 
+mat4 toMathFunctionLib(glm::mat4 m) {
+	return mat4(m[0][0], m[0][1], m[0][2], m[0][3],
+				m[1][0], m[1][1], m[1][2], m[1][3],
+				m[2][0], m[2][1], m[2][2], m[2][3],
+				m[3][0], m[3][1], m[3][2], m[3][3]
+	);
+}
+
 void displayFunction()
 {
 	// tell GL to only draw onto a pixel if the shape is closer to the viewer
@@ -49,7 +64,7 @@ void displayFunction()
 	glGetIntegerv(GL_VIEWPORT, m_viewport);
 
 	// Root of the Hierarchy
-	mat4 view = identity_mat4();
+	mat4 view = toMathFunctionLib(GraphicsEngine::camera.GetViewMatrix());
 	mat4 persp_proj = perspective(45.0f, (float)m_viewport[2] / (float)m_viewport[3], 0.1f, 1000.0f);
 	mat4 model = identity_mat4();
 	view = translate(view, vec3(0.0, 0.0, -10.0f));
@@ -272,4 +287,9 @@ void GraphicsEngine::initShaders()
 void GraphicsEngine::setRootNode(Node * node)
 {
 	root = node;
+}
+
+void GraphicsEngine::setCamera(Camera camera)
+{
+	GraphicsEngine::camera = camera;
 }

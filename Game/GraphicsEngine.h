@@ -4,6 +4,7 @@
 
 #include <vector>
 #include "Mesh.h"
+#include "Camera.h"
 
 // Project includes
 #include "maths_funcs.h"
@@ -19,8 +20,10 @@ class GraphicsEngine
 		bool init(int argc, char** argv, int width, int height);
 		Node* load_mesh(const char * file_name);
 		void setRootNode(Node* node);
+		void setCamera(Camera camera);
 
 		static GLuint shaderProgramID;
+		static Camera camera;
 		static Node* root;
 
 	private:
