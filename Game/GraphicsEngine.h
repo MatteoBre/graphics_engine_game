@@ -20,10 +20,10 @@ class GraphicsEngine
 		bool init(int argc, char** argv, int width, int height);
 		Node* load_mesh(const char * file_name);
 		void setRootNode(Node* node);
-		void setCamera(Camera camera);
+		void setCamera(Camera* camera);
 
 		static GLuint shaderProgramID;
-		static Camera camera;
+		static Camera* camera;
 		static Node* root;
 
 	private:

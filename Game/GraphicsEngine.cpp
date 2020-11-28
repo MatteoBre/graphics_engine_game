@@ -21,7 +21,7 @@
 
 GLuint GraphicsEngine::shaderProgramID = 0;
 Node* GraphicsEngine::root = NULL;
-Camera GraphicsEngine::camera = Camera{};
+Camera* GraphicsEngine::camera = NULL;
 
 mat4 computeMatrix(std::vector<mat4> matrixHierarchy) {
 	mat4 result = identity_mat4();
@@ -44,10 +44,10 @@ void drawTree(Node* root, std::vector<mat4> matrixHierarchy) {
 }
 
 mat4 toMathFunctionLib(glm::mat4 m) {
-	return mat4(m[0][0], m[0][1], m[0][2], m[0][3],
-				m[1][0], m[1][1], m[1][2], m[1][3],
-				m[2][0], m[2][1], m[2][2], m[2][3],
-				m[3][0], m[3][1], m[3][2], m[3][3]
+	return mat4(m[0][0], m[1][0], m[2][0], m[3][0],
+				m[0][1], m[1][1], m[2][1], m[3][1],
+				m[0][2], m[1][2], m[2][2], m[3][2],
+				m[0][3], m[1][3], m[2][3], m[3][3]
 	);
 }
 
@@ -64,8 +64,8 @@ void displayFunction()
 	glGetIntegerv(GL_VIEWPORT, m_viewport);
 
 	// Root of the Hierarchy
-	mat4 view = toMathFunctionLib(GraphicsEngine::camera.GetViewMatrix());
-	mat4 persp_proj = perspective(45.0f, (float)m_viewport[2] / (float)m_viewport[3], 0.1f, 1000.0f);
+	mat4 view = toMathFunctionLib(GraphicsEngine::camera->GetViewMatrix());
+	mat4 persp_proj = perspective(GraphicsEngine::camera->GetZoom(), (float)m_viewport[2] / (float)m_viewport[3], 0.1f, 1000.0f);
 	mat4 model = identity_mat4();
 	view = translate(view, vec3(0.0, 0.0, -10.0f));
 
@@ -80,7 +80,6 @@ void displayFunction()
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
 
 	//draw
-	std::cout << GraphicsEngine::root;
 	drawTree(GraphicsEngine::root, std::vector<mat4>());
 
 	glutSwapBuffers();
@@ -289,7 +288,7 @@ void GraphicsEngine::setRootNode(Node * node)
 	root = node;
 }
 
-void GraphicsEngine::setCamera(Camera camera)
+void GraphicsEngine::setCamera(Camera* camera)
 {
 	GraphicsEngine::camera = camera;
 }

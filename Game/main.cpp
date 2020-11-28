@@ -31,6 +31,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#define SPEED 0.02f
+
 using namespace std;
 GLuint shaderProgramID;
 
@@ -38,6 +40,8 @@ ModelData mesh_data;
 unsigned int mesh_vao = 0;
 int width = 800;
 int height = 600;
+
+Camera* camera;
 
 void updateScene() {
 
@@ -52,62 +56,41 @@ void updateScene() {
 	glutPostRedisplay();
 }
 
-// Placeholder code for the keypress
-void keypress(unsigned char key, int x, int y) {
-	if (key == 'x') {
-		//Translate the base, etc.
+void keyboardCallback(unsigned char key, int x, int y) {
+	if (key == 'w') {
+		camera->ProcessKeyboard(FORWARD, SPEED);
+	}
+	if (key == 's') {
+		camera->ProcessKeyboard(BACKWARD, SPEED);
+	}
+	if (key == 'a') {
+		camera->ProcessKeyboard(LEFT, SPEED);
+	}
+	if (key == 'd') {
+		camera->ProcessKeyboard(RIGHT, SPEED);
 	}
 }
 
-/*
-void DoMovement()
-{
-	// Camera controls
-	if (keys[GLFW_KEY_W] || keys[GLFW_KEY_UP])
-	{
-		camera.ProcessKeyboard(FORWARD, deltaTime);
-	}
+bool firstMouse = true;
+GLfloat lastX = width / 2.0;
+GLfloat lastY = height / 2.0;
 
-	if (keys[GLFW_KEY_S] || keys[GLFW_KEY_DOWN])
-	{
-		camera.ProcessKeyboard(BACKWARD, deltaTime);
-	}
-
-	if (keys[GLFW_KEY_A] || keys[GLFW_KEY_LEFT])
-	{
-		camera.ProcessKeyboard(LEFT, deltaTime);
-	}
-
-	if (keys[GLFW_KEY_D] || keys[GLFW_KEY_RIGHT])
-	{
-		camera.ProcessKeyboard(RIGHT, deltaTime);
-	}
-}
-
-void MouseCallback(GLFWwindow *window, double xPos, double yPos)
-{
+void mouseCallback(int button, int state, int x, int y) {
 	if (firstMouse)
 	{
-		lastX = xPos;
-		lastY = yPos;
+		lastX = x;
+		lastY = y;
 		firstMouse = false;
 	}
 
-	GLfloat xOffset = xPos - lastX;
-	GLfloat yOffset = lastY - yPos;  // Reversed since y-coordinates go from bottom to left
+	GLfloat xOffset = x - lastX;
+	GLfloat yOffset = lastY - y;
 
-	lastX = xPos;
-	lastY = yPos;
+	lastX = x;
+	lastY = y;
 
-	camera.ProcessMouseMovement(xOffset, yOffset);
+	camera->ProcessMouseMovement(xOffset, yOffset);
 }
-
-
-void ScrollCallback(GLFWwindow *window, double xOffset, double yOffset)
-{
-	camera.ProcessMouseScroll(yOffset);
-}
-*/
 
 int main(int argc, char** argv) {
 	//Create the Graphics Engine
@@ -120,7 +103,7 @@ int main(int argc, char** argv) {
 	Node* root = graphicsEngine.load_mesh("test1.dae");
 	graphicsEngine.setRootNode(root);
 
-	Camera camera = Camera{ glm::vec3(0.0f, 0.0f, 0.0f) };
+	camera = new Camera{ glm::vec3(0.0f, 0.0f, 0.0f) };
 	graphicsEngine.setCamera(camera);
 
 	//shaderProgramID = graphicsEngine.shaderProgramID;
@@ -128,7 +111,8 @@ int main(int argc, char** argv) {
 	// Tell glut where the display function is
 	//glutDisplayFunc(display);
 	glutIdleFunc(updateScene);
-	//glutKeyboardFunc(keypress);
+	glutMouseFunc(mouseCallback);
+	glutKeyboardFunc(keyboardCallback);
 
 	// Set up your objects and shaders
 	//init();

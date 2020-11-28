@@ -9,6 +9,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <iostream>
+
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement
 {
@@ -37,7 +39,7 @@ public:
         this->worldUp = up;
         this->yaw = yaw;
         this->pitch = pitch;
-        this->updateCameraVectors( );
+        this->updateCameraVectors();
     }
     
     // Constructor with scalar values
@@ -47,7 +49,7 @@ public:
         this->worldUp = glm::vec3( upX, upY, upZ );
         this->yaw = yaw;
         this->pitch = pitch;
-        this->updateCameraVectors( );
+        this->updateCameraVectors();
     }
     
     // Returns the view matrix calculated using Eular Angles and the LookAt Matrix
@@ -80,6 +82,8 @@ public:
         {
             this->position += this->right * velocity;
         }
+
+		std::cout << this->position.x << " " << this->position.y << " " << this->position.z << "\n";
     }
     
     // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.

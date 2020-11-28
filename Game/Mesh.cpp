@@ -23,7 +23,6 @@ void Mesh::init(GLuint shaderProgramID) {
 	loc2 = glGetAttribLocation(shaderProgramID, "vertex_normal");
 	loc3 = glGetAttribLocation(shaderProgramID, "vertex_texture");
 
-	std::cout << data.mPointCount << " lol\n";
 	if (data.mPointCount == 0)
 		return;
 	glGenBuffers(1, &vp_vbo);
