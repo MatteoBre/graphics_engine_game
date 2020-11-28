@@ -67,7 +67,6 @@ void displayFunction()
 	mat4 view = toMathFunctionLib(GraphicsEngine::camera->GetViewMatrix());
 	mat4 persp_proj = perspective(GraphicsEngine::camera->GetZoom(), (float)m_viewport[2] / (float)m_viewport[3], 0.1f, 1000.0f);
 	mat4 model = identity_mat4();
-	view = translate(view, vec3(0.0, 0.0, -10.0f));
 
 	//Declare your uniform variables that will be used in your shader
 	int matrix_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "model");
