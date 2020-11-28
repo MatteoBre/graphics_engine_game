@@ -76,7 +76,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>freeglut\include\;glew-1.10.0\include\;assimp\assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>glm;freeglut\include\;glew-1.10.0\include\;assimp\assimp\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -90,7 +90,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>freeglut\include\;glew-1.10.0\include\;assimp\assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>glm;freeglut\include\;glew-1.10.0\include\;assimp\assimp\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,7 +106,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>freeglut\include\;glew-1.10.0\include\;assimp\assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>glm;freeglut\include\;glew-1.10.0\include\;assimp\assimp\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -124,7 +124,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>freeglut\include\;glew-1.10.0\include\;assimp\assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>glm;freeglut\include\;glew-1.10.0\include\;assimp\assimp\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -142,6 +142,7 @@
     <ClCompile Include="Node.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="maths_funcs.h" />
     <ClInclude Include="Mesh.h" />
