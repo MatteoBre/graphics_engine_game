@@ -71,18 +71,17 @@ void keyboardCallback(unsigned char key, int x, int y) {
 	}
 }
 
-bool firstMouse = true;
 GLfloat lastX = width / 2.0;
 GLfloat lastY = height / 2.0;
 
 void mouseCallback(int button, int state, int x, int y) {
-	if (firstMouse)
-	{
+	if (state == 0) {
 		lastX = x;
 		lastY = y;
-		firstMouse = false;
 	}
+}
 
+void cameraUpdateMouse(int x, int y) {
 	GLfloat xOffset = x - lastX;
 	GLfloat yOffset = lastY - y;
 
@@ -100,10 +99,10 @@ int main(int argc, char** argv) {
 	if(!graphicsEngine.init(argc, argv, width, height)) {
 		return 1;
 	}
-	Node* root = graphicsEngine.load_mesh("test1.dae");
+	Node* root = graphicsEngine.load_mesh("level1.dae");
 	graphicsEngine.setRootNode(root);
 
-	camera = new Camera{ glm::vec3(0.0f, 0.0f, 0.0f) };
+	camera = new Camera{ glm::vec3(9.0f, 1.8f, 0.0f) };
 	graphicsEngine.setCamera(camera);
 
 	//shaderProgramID = graphicsEngine.shaderProgramID;
@@ -112,6 +111,8 @@ int main(int argc, char** argv) {
 	//glutDisplayFunc(display);
 	glutIdleFunc(updateScene);
 	glutMouseFunc(mouseCallback);
+	//glutPassiveMotionFunc(cameraUpdate);
+	glutMotionFunc(cameraUpdateMouse);
 	glutKeyboardFunc(keyboardCallback);
 
 	// Set up your objects and shaders
