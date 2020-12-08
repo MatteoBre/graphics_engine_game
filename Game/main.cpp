@@ -103,6 +103,10 @@ int main(int argc, char** argv) {
 	graphicsEngine.setRootNode(root);
 
 	camera = new Camera{ glm::vec3(9.0f, 1.8f, 0.0f) };
+	camera->fixPositionInY(1.8f);
+
+	// Mouse sensitivity is 0.25, I need a -90 degrees rotation, so -90/0.25 = -360
+	camera->ProcessMouseMovement(-360.0f, 0.0f);
 	graphicsEngine.setCamera(camera);
 
 	//shaderProgramID = graphicsEngine.shaderProgramID;

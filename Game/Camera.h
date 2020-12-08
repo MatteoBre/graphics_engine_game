@@ -39,6 +39,7 @@ public:
         this->worldUp = up;
         this->yaw = yaw;
         this->pitch = pitch;
+		this->fixYPosition = false;
         this->updateCameraVectors();
     }
     
@@ -49,6 +50,7 @@ public:
         this->worldUp = glm::vec3( upX, upY, upZ );
         this->yaw = yaw;
         this->pitch = pitch;
+		this->fixYPosition = false;
         this->updateCameraVectors();
     }
     
@@ -84,7 +86,15 @@ public:
         }
 
 		std::cout << this->position.x << " " << this->position.y << " " << this->position.z << "\n";
+		if (this->fixYPosition) {
+			this->position.y = this->yPosition;
+		}
     }
+
+	void fixPositionInY(float y) {
+		this->fixYPosition = true;
+		this->yPosition = y;
+	}
     
     // Processes input received from a mouse input system. Expects the offset value in both the x and y direction.
     void ProcessMouseMovement( GLfloat xOffset, GLfloat yOffset, GLboolean constrainPitch = true )
@@ -153,6 +163,10 @@ private:
     GLfloat movementSpeed;
     GLfloat mouseSensitivity;
     GLfloat zoom;
+
+	// Fixed Y position
+	bool fixYPosition;
+	float yPosition;
     
     // Calculates the front vector from the Camera's (updated) Eular Angles
     void updateCameraVectors( )
