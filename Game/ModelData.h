@@ -8,4 +8,5 @@ typedef struct
 	std::vector<vec3> mVertices;
 	std::vector<vec3> mNormals;
 	std::vector<vec2> mTextureCoords;
+	int materialIndex;
 } ModelData;

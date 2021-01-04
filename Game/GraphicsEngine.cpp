@@ -22,6 +22,7 @@
 GLuint GraphicsEngine::shaderProgramID = 0;
 Node* GraphicsEngine::root = NULL;
 Camera* GraphicsEngine::camera = NULL;
+std::vector<Material*> GraphicsEngine::materials = std::vector<Material*>{};
 
 mat4 computeMatrix(std::vector<mat4> matrixHierarchy) {
 	mat4 result = identity_mat4();
@@ -123,10 +124,12 @@ static mat4 getMat4(aiMatrix4x4 m) {
 
 Node* createTree(const aiNode* root, const aiScene* scene) {
 	ModelData modelData;
+	bool isMesh = root->mNumMeshes > 0;
 	for (unsigned int m_i = 0; m_i < root->mNumMeshes; m_i++) {
 		int index = root->mMeshes[m_i];
 		const aiMesh* mesh = scene->mMeshes[index];
 		modelData.mPointCount += mesh->mNumVertices;
+		modelData.materialIndex = mesh->mMaterialIndex;
 		for (unsigned int v_i = 0; v_i < mesh->mNumVertices; v_i++) {
 			if (mesh->HasPositions()) {
 				const aiVector3D* vp = &(mesh->mVertices[v_i]);
@@ -145,15 +148,23 @@ Node* createTree(const aiNode* root, const aiScene* scene) {
 		}
 	}
 
+	Node* currentNode;
 	mat4 matrix = getMat4(root->mTransformation);
-	Mesh* mesh = Mesh::fromModelData(modelData, matrix, MESH, GraphicsEngine::shaderProgramID);
+	if (isMesh) {
+		std::cout << "Mat num: " << modelData.materialIndex << std::endl;
+		Mesh* mesh = Mesh::fromModelData(modelData, matrix, MESH, GraphicsEngine::shaderProgramID, GraphicsEngine::materials.at(modelData.materialIndex));
+		currentNode = mesh;
+	}
+	else {
+		currentNode = new Node(matrix, NodeType::NODE);
+	}
 
 	for (int i = 0; i < root->mNumChildren; i++) {
 		Node* child = createTree(root->mChildren[i], scene);
-		mesh->addChild(child);
+		currentNode->addChild(child);
 	}
 
-	return mesh;
+	return currentNode;
 }
 
 Node* GraphicsEngine::load_mesh(const char* file_name) {
@@ -170,7 +181,23 @@ Node* GraphicsEngine::load_mesh(const char* file_name) {
 	}
 
 	aiNode* assimpRoot = scene->mRootNode;
+
+	// Materials extraction
+	aiMaterial* material;
+	for (int i = 0; i < scene->mNumMaterials; i++) {
+		material = scene->mMaterials[i];
+		materials.push_back(Material::fromAiMaterial(material, GraphicsEngine::shaderProgramID));
+		std::cout << material->GetTextureCount(aiTextureType_DIFFUSE) << std::endl;
+	}
+
 	Node* treeRoot = createTree(assimpRoot, scene);
+
+	// Textures extraction
+	aiTexture* texture;
+	std::cout << "Textures: "<< scene->mNumTextures << std::endl;
+	for (int i = 0; i < scene->mNumTextures; i++) {
+		texture = scene->mTextures[i];
+	}
 
 	aiReleaseImport(scene);
 	return treeRoot;

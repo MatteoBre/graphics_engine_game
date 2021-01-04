@@ -23,6 +23,7 @@ class GraphicsEngine
 		void setCamera(Camera* camera);
 
 		static GLuint shaderProgramID;
+		static std::vector<Material*> materials;
 		static Camera* camera;
 		static Node* root;
 
@@ -31,5 +32,4 @@ class GraphicsEngine
 		void AddShader(GLuint ShaderProgram, const char* pShaderText, GLenum ShaderType);
 		GLuint CompileShaders();
 		void initShaders();
-
 };

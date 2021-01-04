@@ -32,3 +32,7 @@ mat4 Node::getMatrix()
 {
 	return matrix;
 }
+
+void Node::draw(mat4 matrix)
+{
+}

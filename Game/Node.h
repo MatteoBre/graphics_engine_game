@@ -3,6 +3,7 @@
 #include "maths_funcs.h"
 
 enum NodeType {
+	NODE,
 	MESH
 };
 
@@ -15,7 +16,7 @@ class Node
 		NodeType getNodeType();
 		std::vector<Node*> getChildren();
 		mat4 getMatrix();
-		virtual void draw(mat4 matrix) = 0;
+		virtual void draw(mat4 matrix);
 
 	protected:
 		mat4 matrix;

@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.90.1 commit date:2020-09-23, commit time:06:43, hash:3e85bb34d0d7</authoring_tool>
     </contributor>
-    <created>2020-12-08T12:56:09</created>
-    <modified>2020-12-08T12:56:09</modified>
+    <created>2021-01-04T21:16:18</created>
+    <modified>2021-01-04T21:16:18</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -112,7 +112,7 @@
         </technique>
       </profile_COMMON>
     </effect>
-    <effect id="Sting-effect">
+    <effect id="Dark_Metal-effect">
       <profile_COMMON>
         <technique sid="common">
           <lambert>
@@ -120,8 +120,11 @@
               <color sid="emission">0 0 0 1</color>
             </emission>
             <diffuse>
-              <color sid="diffuse">0.64 0.64 0.64 1</color>
+              <color sid="diffuse">0.1556665 0.1556665 0.1556665 1</color>
             </diffuse>
+            <reflectivity>
+              <float sid="specular">1</float>
+            </reflectivity>
             <index_of_refraction>
               <float sid="ior">1</float>
             </index_of_refraction>
@@ -129,14 +132,94 @@
         </technique>
       </profile_COMMON>
     </effect>
+    <effect id="Metal-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">1 1 1 1</color>
+            </diffuse>
+            <reflectivity>
+              <float sid="specular">1</float>
+            </reflectivity>
+            <index_of_refraction>
+              <float sid="ior">1</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Wood-effect">
+      <profile_COMMON>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <color sid="diffuse">0.258183 0.05951121 0.006512099 1</color>
+            </diffuse>
+            <reflectivity>
+              <float sid="specular">0.2440945</float>
+            </reflectivity>
+            <index_of_refraction>
+              <float sid="ior">1</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
+    <effect id="Material-effect">
+      <profile_COMMON>
+        <newparam sid="photos_2019_12_22_fst_dirty-grunge-surface_jpg-surface">
+          <surface type="2D">
+            <init_from>photos_2019_12_22_fst_dirty-grunge-surface_jpg</init_from>
+          </surface>
+        </newparam>
+        <newparam sid="photos_2019_12_22_fst_dirty-grunge-surface_jpg-sampler">
+          <sampler2D>
+            <source>photos_2019_12_22_fst_dirty-grunge-surface_jpg-surface</source>
+          </sampler2D>
+        </newparam>
+        <technique sid="common">
+          <lambert>
+            <emission>
+              <color sid="emission">0 0 0 1</color>
+            </emission>
+            <diffuse>
+              <texture texture="photos_2019_12_22_fst_dirty-grunge-surface_jpg-sampler" texcoord="UVMap"/>
+            </diffuse>
+            <index_of_refraction>
+              <float sid="ior">1.45</float>
+            </index_of_refraction>
+          </lambert>
+        </technique>
+      </profile_COMMON>
+    </effect>
   </library_effects>
-  <library_images/>
+  <library_images>
+    <image id="photos_2019_12_22_fst_dirty-grunge-surface_jpg" name="photos_2019_12_22_fst_dirty-grunge-surface_jpg">
+      <init_from>photos_2019_12_22_fst_dirty-grunge-surface.jpg</init_from>
+    </image>
+  </library_images>
   <library_materials>
     <material id="Mat_001-material" name="Mat.001">
       <instance_effect url="#Mat_001-effect"/>
     </material>
-    <material id="Sting-material" name="Sting">
-      <instance_effect url="#Sting-effect"/>
+    <material id="Dark_Metal-material" name="Dark Metal">
+      <instance_effect url="#Dark_Metal-effect"/>
+    </material>
+    <material id="Metal-material" name="Metal">
+      <instance_effect url="#Metal-effect"/>
+    </material>
+    <material id="Wood-material" name="Wood">
+      <instance_effect url="#Wood-effect"/>
+    </material>
+    <material id="Material-material" name="Material">
+      <instance_effect url="#Material-effect"/>
     </material>
   </library_materials>
   <library_geometries>
@@ -216,7 +299,7 @@
         <vertices id="Plane_023-mesh-vertices">
           <input semantic="POSITION" source="#Plane_023-mesh-positions"/>
         </vertices>
-        <triangles material="Sting-material" count="1280">
+        <triangles material="Dark_Metal-material" count="1280">
           <input semantic="VERTEX" source="#Plane_023-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Plane_023-mesh-normals" offset="1"/>
           <input semantic="TEXCOORD" source="#Plane_023-mesh-map-0" offset="2" set="0"/>
@@ -258,7 +341,7 @@
         <vertices id="Plane_022-mesh-vertices">
           <input semantic="POSITION" source="#Plane_022-mesh-positions"/>
         </vertices>
-        <triangles material="Sting-material" count="624">
+        <triangles material="Metal-material" count="624">
           <input semantic="VERTEX" source="#Plane_022-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Plane_022-mesh-normals" offset="1"/>
           <input semantic="TEXCOORD" source="#Plane_022-mesh-map-0" offset="2" set="0"/>
@@ -300,7 +383,7 @@
         <vertices id="Circle-mesh-vertices">
           <input semantic="POSITION" source="#Circle-mesh-positions"/>
         </vertices>
-        <triangles material="Sting-material" count="320">
+        <triangles material="Wood-material" count="320">
           <input semantic="VERTEX" source="#Circle-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Circle-mesh-normals" offset="1"/>
           <input semantic="TEXCOORD" source="#Circle-mesh-map-0" offset="2" set="0"/>
@@ -342,7 +425,7 @@
         <vertices id="Plane_021-mesh-vertices">
           <input semantic="POSITION" source="#Plane_021-mesh-positions"/>
         </vertices>
-        <triangles material="Sting-material" count="371">
+        <triangles material="Metal-material" count="371">
           <input semantic="VERTEX" source="#Plane_021-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Plane_021-mesh-normals" offset="1"/>
           <input semantic="TEXCOORD" source="#Plane_021-mesh-map-0" offset="2" set="0"/>
@@ -678,7 +761,7 @@
         <vertices id="Plane_014-mesh-vertices">
           <input semantic="POSITION" source="#Plane_014-mesh-positions"/>
         </vertices>
-        <triangles count="2">
+        <triangles material="Material-material" count="2">
           <input semantic="VERTEX" source="#Plane_014-mesh-vertices" offset="0"/>
           <input semantic="NORMAL" source="#Plane_014-mesh-normals" offset="1"/>
           <input semantic="TEXCOORD" source="#Plane_014-mesh-map-0" offset="2" set="0"/>
@@ -1298,7 +1381,7 @@
         <instance_geometry url="#Plane_022-mesh" name="Pommeau">
           <bind_material>
             <technique_common>
-              <instance_material symbol="Sting-material" target="#Sting-material">
+              <instance_material symbol="Metal-material" target="#Metal-material">
                 <bind_vertex_input semantic="Plane_001-mesh-map" input_semantic="TEXCOORD" input_set="0"/>
               </instance_material>
             </technique_common>
@@ -1309,7 +1392,7 @@
           <instance_geometry url="#Plane_021-mesh" name="Lame">
             <bind_material>
               <technique_common>
-                <instance_material symbol="Sting-material" target="#Sting-material">
+                <instance_material symbol="Metal-material" target="#Metal-material">
                   <bind_vertex_input semantic="Plane-mesh-map" input_semantic="TEXCOORD" input_set="0"/>
                 </instance_material>
               </technique_common>
@@ -1321,7 +1404,7 @@
           <instance_geometry url="#Circle-mesh" name="Manche">
             <bind_material>
               <technique_common>
-                <instance_material symbol="Sting-material" target="#Sting-material">
+                <instance_material symbol="Wood-material" target="#Wood-material">
                   <bind_vertex_input semantic="Circle-mesh-map" input_semantic="TEXCOORD" input_set="0"/>
                 </instance_material>
               </technique_common>
@@ -1333,7 +1416,7 @@
           <instance_geometry url="#Plane_023-mesh" name="Garde">
             <bind_material>
               <technique_common>
-                <instance_material symbol="Sting-material" target="#Sting-material">
+                <instance_material symbol="Dark_Metal-material" target="#Dark_Metal-material">
                   <bind_vertex_input semantic="Plane_002-mesh-map" input_semantic="TEXCOORD" input_set="0"/>
                 </instance_material>
               </technique_common>
@@ -1413,7 +1496,15 @@
         </node>
         <node id="firstLeft_002" name="firstLeft.002" type="NODE">
           <matrix sid="transform">-3.93403e-8 6.55671e-9 0.1 0 0.9 2.86603e-16 4.37114e-9 -0.1 0 0.15 -4.37114e-9 0.15 0 0 0 1</matrix>
-          <instance_geometry url="#Plane_014-mesh" name="firstLeft.002"/>
+          <instance_geometry url="#Plane_014-mesh" name="firstLeft.002">
+            <bind_material>
+              <technique_common>
+                <instance_material symbol="Material-material" target="#Material-material">
+                  <bind_vertex_input semantic="UVMap" input_semantic="TEXCOORD" input_set="0"/>
+                </instance_material>
+              </technique_common>
+            </bind_material>
+          </instance_geometry>
         </node>
         <node id="secondRight" name="secondRight" type="NODE">
           <matrix sid="transform">5.3662e-9 -6.55671e-9 -0.1 0.2 -0.45 0 -1.19249e-9 0.55 0 0.15 -4.37114e-9 0.15 0 0 0 1</matrix>
