@@ -104,7 +104,13 @@ void displayFunction()
 	std::vector<mat4> matrices = {};
 	getAllLights(GraphicsEngine::root, std::vector<mat4>(), lights, matrices);
 	// Draw tree for each light
+	glDepthFunc(GL_LEQUAL);
 	for (int i = 0; i < lights.size(); i++) {
+		if (i >= 1)
+		{
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ONE, GL_ONE);
+		}
 		Light* light = lights.at(i);
 		mat4 lightMat = matrices.at(i);
 		lightMat = view * lightMat;
@@ -112,6 +118,7 @@ void displayFunction()
 		glUniform3f(light_pos_location, lightMat.m[12], lightMat.m[13], lightMat.m[14]);
 		drawTree(GraphicsEngine::root, std::vector<mat4>());
 	}
+	glDisable(GL_BLEND);
 
 	glutSwapBuffers();
 }
