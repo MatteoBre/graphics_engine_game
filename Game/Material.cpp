@@ -1,4 +1,5 @@
 #include "Material.h"
+#include <iostream>
 
 // GLM Mathemtics
 #include <glm/glm.hpp>
@@ -10,7 +11,6 @@ void Material::setAsMaterialToDraw()
     glUniform3f(material_ambient_location, ambient.v[0], ambient.v[1], ambient.v[2]);
     glUniform3f(material_diffuse_location, diffuse.v[0], diffuse.v[1], diffuse.v[2]);
     glUniform3f(material_specular_location, specular.v[0], specular.v[1], specular.v[2]);
-    glUniform1f(material_shininess_location, 0.5f);
 }
 
 Material* Material::fromAiMaterial(aiMaterial* aiMaterial, GLuint shaderProgramID)
@@ -32,9 +32,6 @@ Material* Material::fromAiMaterial(aiMaterial* aiMaterial, GLuint shaderProgramI
     aiMaterial->Get(AI_MATKEY_COLOR_SPECULAR, color);
     material->specular = vec3{ color.r, color.g, color.b };
     material->material_specular_location = glGetUniformLocation(shaderProgramID, "material_specular");
-
-    // Adding Shininess
-    material->material_specular_location = glGetUniformLocation(shaderProgramID, "material_shininess");
 
 	// Texture
     /*int numTextures = aiMaterial->GetTextureCount(aiTextureType_DIFFUSE);

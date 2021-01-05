@@ -46,9 +46,9 @@ void drawTree(Node* root, std::vector<mat4> matrixHierarchy) {
 
 mat4 toMathFunctionLib(glm::mat4 m) {
 	return mat4(m[0][0], m[1][0], m[2][0], m[3][0],
-				m[0][1], m[1][1], m[2][1], m[3][1],
-				m[0][2], m[1][2], m[2][2], m[3][2],
-				m[0][3], m[1][3], m[2][3], m[3][3]
+		m[0][1], m[1][1], m[2][1], m[3][1],
+		m[0][2], m[1][2], m[2][2], m[3][2],
+		m[0][3], m[1][3], m[2][3], m[3][3]
 	);
 }
 
@@ -73,11 +73,13 @@ void displayFunction()
 	int matrix_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "model");
 	int view_mat_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "view");
 	int proj_mat_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "proj");
+	int player_position_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "player_position");
 
 	// update uniforms & draw
 	glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
 	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
-	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
+	glUniform3f(player_position_location, GraphicsEngine::camera->position.x, GraphicsEngine::camera->position.y, GraphicsEngine::camera->position.z);
+	//glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
 
 	//draw
 	drawTree(GraphicsEngine::root, std::vector<mat4>());
@@ -124,6 +126,7 @@ static mat4 getMat4(aiMatrix4x4 m) {
 
 Node* createTree(const aiNode* root, const aiScene* scene) {
 	ModelData modelData;
+	modelData.mPointCount = 0;
 	bool isMesh = root->mNumMeshes > 0;
 	for (unsigned int m_i = 0; m_i < root->mNumMeshes; m_i++) {
 		int index = root->mMeshes[m_i];
@@ -131,11 +134,9 @@ Node* createTree(const aiNode* root, const aiScene* scene) {
 		modelData.mPointCount += mesh->mNumVertices;
 		modelData.materialIndex = mesh->mMaterialIndex;
 		for (unsigned int v_i = 0; v_i < mesh->mNumVertices; v_i++) {
-			if (mesh->HasPositions()) {
+			if (mesh->HasPositions() && mesh->HasNormals()) {
 				const aiVector3D* vp = &(mesh->mVertices[v_i]);
 				modelData.mVertices.push_back(vec3(vp->x, vp->y, vp->z));
-			}
-			if (mesh->HasNormals()) {
 				const aiVector3D* vn = &(mesh->mNormals[v_i]);
 				modelData.mNormals.push_back(vec3(vn->x, vn->y, vn->z));
 			}
@@ -156,7 +157,7 @@ Node* createTree(const aiNode* root, const aiScene* scene) {
 		currentNode = mesh;
 	}
 	else {
-		currentNode = new Node(matrix, NodeType::NODE);
+		currentNode = new Node(matrix, NODE);
 	}
 
 	for (int i = 0; i < root->mNumChildren; i++) {
