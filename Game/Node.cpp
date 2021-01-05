@@ -8,6 +8,11 @@ Node::Node(mat4 matrix, NodeType nodeType)
 	this->nodeType = nodeType;
 }
 
+void Node::setName(std::string name)
+{
+	this->name = name;
+}
+
 void Node::addChild(Node* child)
 {
 	children.push_back(child);

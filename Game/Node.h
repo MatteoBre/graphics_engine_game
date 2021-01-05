@@ -12,6 +12,7 @@ class Node
 {
 	public:
 		Node(mat4 matrix, NodeType nodeType);
+		void setName(std::string name);
 		void addChild(Node* child);
 		int getNumberOfChildren();
 		NodeType getNodeType();
@@ -24,5 +25,6 @@ class Node
 
 	private:
 		std::vector<Node*> children;
+		std::string name;
 		NodeType nodeType;
 };

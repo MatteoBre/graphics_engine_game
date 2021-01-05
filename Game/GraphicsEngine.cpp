@@ -199,6 +199,8 @@ Node* createTree(const aiNode* root, const aiScene* scene, std::set<std::string>
 		currentNode = new Node(matrix, NODE);
 	}
 
+	currentNode->setName(root->mName.C_Str());
+
 	for (int i = 0; i < root->mNumChildren; i++) {
 		Node* child = createTree(root->mChildren[i], scene, lightNames);
 		currentNode->addChild(child);
