@@ -73,13 +73,11 @@ void displayFunction()
 	int matrix_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "model");
 	int view_mat_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "view");
 	int proj_mat_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "proj");
-	int player_position_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "player_position");
 
 	// update uniforms & draw
 	glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
 	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
-	glUniform3f(player_position_location, GraphicsEngine::camera->position.x, GraphicsEngine::camera->position.y, GraphicsEngine::camera->position.z);
-	//glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
+	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
 
 	//draw
 	drawTree(GraphicsEngine::root, std::vector<mat4>());
