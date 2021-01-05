@@ -46,7 +46,12 @@ unsigned int mesh_vao = 0;
 int width = 800;
 int height = 600;
 
-Camera* camera;
+// Cameras
+Camera* mainCamera;
+Camera* secondaryCamera;
+Node* roofObj;
+Node* floorObj;
+
 Node* root;
 GraphicsEngine graphicsEngine;
 Boundary* boundaries;
@@ -177,25 +182,34 @@ float euclideanDistance(vec3 v1, vec3 v2) {
 
 void keyboardCallback(unsigned char key, int x, int y) {
 	if (key == 'w') {
-		camera->ProcessKeyboard(FORWARD, SPEED);
+		mainCamera->ProcessKeyboard(FORWARD, SPEED);
 	}
 	if (key == 's') {
-		camera->ProcessKeyboard(BACKWARD, SPEED);
+		mainCamera->ProcessKeyboard(BACKWARD, SPEED);
 	}
 	if (key == 'a') {
-		camera->ProcessKeyboard(LEFT, SPEED);
+		mainCamera->ProcessKeyboard(LEFT, SPEED);
 	}
 	if (key == 'd') {
-		camera->ProcessKeyboard(RIGHT, SPEED);
+		mainCamera->ProcessKeyboard(RIGHT, SPEED);
 	}
 	if (key == 'l' && canActivateLever) {
 		vec3 v1 = vec3(leverMatrix->m[12], leverMatrix->m[13], leverMatrix->m[14]);
-		vec3 v2 = vec3(camera->position.x, camera->position.y, camera->position.z);
+		vec3 v2 = vec3(mainCamera->position.x, mainCamera->position.y, mainCamera->position.z);
 		if (euclideanDistance(v1, v2) < 1.5f && !leverActivated) {
 			leverActivated = true;
 			cout << "Lever activated! A new passage is available." << endl;
 			boundaries->squares.push_back({ vec2(0.1f, 0.9f), vec2(1.9f, 9.9f) });
 		}
+	}
+	if (key == '1') {
+		graphicsEngine.setCamera(mainCamera);
+		removeChildByName(root, "Roof");
+		floorObj->getChildren().push_back(roofObj);
+	}
+	if (key == '2') {
+		removeChildByName(root, "Roof");
+		graphicsEngine.setCamera(secondaryCamera);
 	}
 }
 
@@ -216,7 +230,7 @@ void cameraUpdateMouse(int x, int y) {
 	lastX = x;
 	lastY = y;
 
-	camera->ProcessMouseMovement(xOffset, yOffset);
+	mainCamera->ProcessMouseMovement(xOffset, yOffset);
 }
 
 void populateLevel1Objs() {
@@ -251,7 +265,7 @@ void resetLevel1() {
 }
 
 void restartPosition() {
-	camera->position = glm::vec3(9.0f, 1.8f, 0.0f);
+	mainCamera->position = glm::vec3(9.0f, 1.8f, 0.0f);
 }
 
 void startPlayRound() {
@@ -290,15 +304,20 @@ void initializeLevel1() {
 	root = graphicsEngine.load_mesh("level1.dae");
 	graphicsEngine.setRootNode(root);
 
-	camera = new Camera{ glm::vec3(9.0f, 1.8f, 0.0f) };
-	camera->fixPositionInY(1.8f);
-	camera->setBoundaries(boundaries);
+	mainCamera = new Camera{ glm::vec3(9.0f, 1.8f, 0.0f) };
+	mainCamera->fixPositionInY(1.8f);
+	mainCamera->setBoundaries(boundaries);
 
 	// Mouse sensitivity is 0.25, I need a -90 degrees rotation, so -90/0.25 = -360
-	camera->ProcessMouseMovement(-360.0f, 0.0f);
-	graphicsEngine.setCamera(camera);
+	mainCamera->ProcessMouseMovement(-360.0f, 0.0f);
+	graphicsEngine.setCamera(mainCamera);
 
 	assignLeverComponents(root);
+
+	secondaryCamera = new Camera{ glm::vec3(1.0f, 30.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f) };
+	secondaryCamera->ProcessMouseMovement(-360.0f, -360.0f);
+	roofObj = findByName(root, "Roof");
+	floorObj = findByName(root, "Floor");
 }
 
 void updateCountdowns() {
@@ -339,7 +358,7 @@ void updateCountdowns() {
 
 void checkIfObjectHasBeenFound(string name) {
 	vec3 v1 = vec3(objectToFindMatrix->m[12], 0.0f, objectToFindMatrix->m[14]);
-	vec3 v2 = vec3(camera->position.x, 0.0f, camera->position.z);
+	vec3 v2 = vec3(mainCamera->position.x, 0.0f, mainCamera->position.z);
 	if (euclideanDistance(v1, v2) < 1.5f) {
 		removeChildByName(root, name);
 		cout << "You found the " << name << endl;
