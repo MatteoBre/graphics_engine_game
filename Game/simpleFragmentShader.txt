@@ -2,11 +2,10 @@ precision mediump float;
 varying vec3 normalInterp;  // Surface normal
 varying vec3 vertPos;       // Vertex position
 
-int mode = 3;   // Rendering mode
-float Ka = 1.0f;   // Ambient reflection coefficient
-float Kd = 1.0f;     // Diffuse reflection coefficient
-float Ks = 1.0f;     // Specular reflection coefficient
-float shininessVal = 2.0f; // Shininess
+float Ka = 0.2f;   // Ambient reflection coefficient
+float Kd = 0.5f;     // Diffuse reflection coefficient
+float Ks = 0.8f;     // Specular reflection coefficient
+float shininessVal = 100.0f; // Shininess
 
 // Material color
 uniform vec3 material_ambient;
@@ -14,6 +13,7 @@ uniform vec3 material_diffuse;
 uniform vec3 material_specular;
 
 uniform vec3 lightPos;
+uniform float light_intensity;
 
 void main() {
   vec3 N = normalize(normalInterp);
@@ -32,11 +32,4 @@ void main() {
   gl_FragColor = vec4(Ka * material_ambient +
                       Kd * lambertian * material_diffuse +
                       Ks * specular * material_specular, 1.0);
-
-  // only ambient
-  if(mode == 2) gl_FragColor = vec4(Ka * material_ambient, 1.0);
-  // only diffuse
-  if(mode == 3) gl_FragColor = vec4(Kd * lambertian * material_diffuse, 1.0);
-  // only specular
-  if(mode == 4) gl_FragColor = vec4(Ks * specular * material_specular, 1.0);
 }

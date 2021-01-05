@@ -93,6 +93,7 @@ void displayFunction()
 	int view_mat_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "view");
 	int proj_mat_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "proj");
 	int light_pos_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "lightPos");
+	int light_intensity = glGetUniformLocation(GraphicsEngine::shaderProgramID, "light_intensity");
 
 	// update uniforms & draw
 	glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
@@ -104,6 +105,7 @@ void displayFunction()
 	std::vector<mat4> matrices = {};
 	getAllLights(GraphicsEngine::root, std::vector<mat4>(), lights, matrices);
 	// Draw tree for each light
+	glUniform1f(light_intensity, 1.0f/ lights.size());
 	glDepthFunc(GL_LEQUAL);
 	for (int i = 0; i < lights.size(); i++) {
 		if (i >= 1)
