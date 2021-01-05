@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.90.1 commit date:2020-09-23, commit time:06:43, hash:3e85bb34d0d7</authoring_tool>
     </contributor>
-    <created>2021-01-05T04:24:00</created>
-    <modified>2021-01-05T04:24:00</modified>
+    <created>2021-01-05T06:13:34</created>
+    <modified>2021-01-05T06:13:34</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -414,6 +414,48 @@
     </material>
   </library_materials>
   <library_geometries>
+    <geometry id="Plane_024-mesh" name="Plane.024">
+      <mesh>
+        <source id="Plane_024-mesh-positions">
+          <float_array id="Plane_024-mesh-positions-array" count="12">-1 -1 0 1 -1 0 -1 1 0 1 1 0</float_array>
+          <technique_common>
+            <accessor source="#Plane_024-mesh-positions-array" count="4" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Plane_024-mesh-normals">
+          <float_array id="Plane_024-mesh-normals-array" count="3">0 0 1</float_array>
+          <technique_common>
+            <accessor source="#Plane_024-mesh-normals-array" count="1" stride="3">
+              <param name="X" type="float"/>
+              <param name="Y" type="float"/>
+              <param name="Z" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <source id="Plane_024-mesh-map-0">
+          <float_array id="Plane_024-mesh-map-0-array" count="12">1 0 0 1 0 0 1 0 1 1 0 1</float_array>
+          <technique_common>
+            <accessor source="#Plane_024-mesh-map-0-array" count="6" stride="2">
+              <param name="S" type="float"/>
+              <param name="T" type="float"/>
+            </accessor>
+          </technique_common>
+        </source>
+        <vertices id="Plane_024-mesh-vertices">
+          <input semantic="POSITION" source="#Plane_024-mesh-positions"/>
+        </vertices>
+        <triangles count="2">
+          <input semantic="VERTEX" source="#Plane_024-mesh-vertices" offset="0"/>
+          <input semantic="NORMAL" source="#Plane_024-mesh-normals" offset="1"/>
+          <input semantic="TEXCOORD" source="#Plane_024-mesh-map-0" offset="2" set="0"/>
+          <p>1 0 0 2 0 1 0 0 2 1 0 3 3 0 4 2 0 5</p>
+        </triangles>
+      </mesh>
+    </geometry>
     <geometry id="Cylinder_003-mesh" name="Cylinder.003">
       <mesh>
         <source id="Cylinder_003-mesh-positions">
@@ -1635,6 +1677,10 @@
   </library_geometries>
   <library_visual_scenes>
     <visual_scene id="Scene" name="Scene">
+      <node id="WallToRemove" name="WallToRemove" type="NODE">
+        <matrix sid="transform">-1 -5.73206e-15 -8.74228e-8 1 -8.74228e-8 6.55671e-8 1 -1 0 1.5 -4.37114e-8 1.5 0 0 0 1</matrix>
+        <instance_geometry url="#Plane_024-mesh" name="WallToRemove"/>
+      </node>
       <node id="Lever" name="Lever" type="NODE">
         <matrix sid="transform">-0.2079614 1.81806e-8 3.38813e-8 -9.970387 -1.81806e-8 -0.2079614 -3.38813e-8 8.797383 3.38813e-8 -3.38813e-8 0.2079614 1.8 0 0 0 1</matrix>
         <instance_geometry url="#Cube_010-mesh" name="Lever">

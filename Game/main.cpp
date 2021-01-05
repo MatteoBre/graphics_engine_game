@@ -42,6 +42,7 @@ int width = 800;
 int height = 600;
 
 Camera* camera;
+Node* root;
 
 // Lever variables
 Node* lever;
@@ -49,6 +50,24 @@ mat4* leverMatrix;
 Node* leverHandle;
 bool leverActivated = false;
 float leverAngle = 0.0f;
+
+bool removeChildByName(Node* root, string name) {
+	if (root == NULL)
+		return false;
+	if (root->getName() == name)
+		return true;
+
+	bool result;
+	for (int i = 0; i < root->getNumberOfChildren(); i++) {
+		result = removeChildByName(root->getChildren()[i], name);
+		if (result == true) {
+			root->getChildren().erase(root->getChildren().begin() + i);
+			break;
+		}
+	}
+
+	return false;
+}
 
 void activateLever() {
 	if (!leverActivated || leverAngle >= 3.14f)
@@ -62,7 +81,7 @@ void activateLever() {
 
 	// remove wall from level1
 	if (leverAngle >= 3.14f) {
-
+		removeChildByName(root, "WallToRemove");
 	}
 }
 
@@ -180,7 +199,7 @@ int main(int argc, char** argv) {
 	if(!graphicsEngine.init(argc, argv, width, height)) {
 		return 1;
 	}
-	Node* root = graphicsEngine.load_mesh("level1.dae");
+	root = graphicsEngine.load_mesh("level1.dae");
 	graphicsEngine.setRootNode(root);
 
 	camera = new Camera{ glm::vec3(9.0f, 1.8f, 0.0f) };

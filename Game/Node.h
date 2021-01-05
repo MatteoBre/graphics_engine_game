@@ -17,7 +17,7 @@ class Node
 		void addChild(Node* child);
 		int getNumberOfChildren();
 		NodeType getNodeType();
-		std::vector<Node*> getChildren();
+		std::vector<Node*>& getChildren();
 		mat4 getMatrix();
 		void setMatrix(mat4 matrix);
 		virtual void draw(mat4 matrix);

@@ -33,7 +33,7 @@ NodeType Node::getNodeType()
 	return nodeType;
 }
 
-std::vector<Node*> Node::getChildren()
+std::vector<Node*>& Node::getChildren()
 {
 	return children;
 }
