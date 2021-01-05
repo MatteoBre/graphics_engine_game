@@ -32,9 +32,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#define SPEED 0.02f
-#define SECONDS_TO_EXPLORE 2
-#define SECONDS_TO_PLAY 40
+#define SPEED 0.035f
+#define SECONDS_TO_EXPLORE 30
+#define SECONDS_TO_PLAY 60
+#define SECONDS_BEFORE_NEW_GAME 10
 
 using namespace std;
 GLuint shaderProgramID;
@@ -46,6 +47,7 @@ int height = 600;
 
 Camera* camera;
 Node* root;
+GraphicsEngine graphicsEngine;
 
 // Lever variables
 Node* lever;
@@ -58,15 +60,19 @@ float leverAngle = 0.0f;
 // Objects to find
 int level1ObjsIndex = 0;
 int lastLevel1ObjsIndex = -1;
-string level1Objs[3];
+Node* objectToFind;
+mat4* objectToFindMatrix;
+const int level1ObjsSize = 3;
+string level1Objs[level1ObjsSize];
 
 // Countdown
 clock_t time_started;
 clock_t current_timestamp;
 int last_typed = 0;
+int winLoseTime;
 
 enum Mode {
-	EXPLORE, PLAY
+	EXPLORE, PLAY, WIN, LOSE
 };
 Mode mode = EXPLORE;
 
@@ -217,7 +223,7 @@ void populateLevel1Objs() {
 	values.push_back("Sword");
 
 	int index;
-	for (int i = 0; i < 3; i++) {
+	for (int i = 0; i < level1ObjsSize; i++) {
 		index = rand() % values.size();
 		level1Objs[i] = values.at(index);
 		values.erase(values.begin() + index);
@@ -226,18 +232,19 @@ void populateLevel1Objs() {
 
 void resetLevel1() {
 	leverActivated = false;
-
-	glm::mat4 leverHandleMatrix = toGlm(leverHandle->getMatrix());
-	leverHandleMatrix = glm::rotate(leverHandleMatrix, 6.28f - leverAngle, glm::vec3(1.0f, 0.0f, 0.0f));
-	leverHandle->setMatrix(toMathFunctionLib(leverHandleMatrix));
-
 	leverAngle = 0.0f;
 
 	level1ObjsIndex = 0;
-	populateLevel1Objs();
 
 	mode = EXPLORE;
 	canActivateLever = false;
+
+	time_started = clock();
+	current_timestamp = clock() - time_started;
+
+	cout << "\n\nWelcome to a new game in the Labyrinth!" << endl;
+	cout << "You have " << SECONDS_TO_EXPLORE << " seconds to explore" << endl;
+	cout << "You cannot pull levers at this point" << endl;
 }
 
 void restartPosition() {
@@ -257,44 +264,7 @@ void typeOnScreen(int val) {
 	cout << last_typed << endl;
 }
 
-void updateCountdowns() {
-	current_timestamp = clock() - time_started;
-
-	if (current_timestamp > SECONDS_TO_EXPLORE * 1000 && mode != PLAY) {
-		mode = PLAY;
-		canActivateLever = true;
-		last_typed = 0;
-		restartPosition();
-		startPlayRound();
-	}
-
-	int secondsToType = current_timestamp / 1000;
-	if (mode != EXPLORE) {
-		secondsToType -= SECONDS_TO_EXPLORE;
-	}
-
-	typeOnScreen(secondsToType);
-}
-
-void gameplay() {
-	if (mode == PLAY) {
-		if (lastLevel1ObjsIndex != level1ObjsIndex) {
-			lastLevel1ObjsIndex = level1ObjsIndex;
-			cout << "Find the " << level1Objs[level1ObjsIndex] << endl;
-		}
-	}
-}
-
-int main(int argc, char** argv) {
-	//Create the Graphics Engine
-	GraphicsEngine graphicsEngine = GraphicsEngine{};
-
-	//Initialize Graphics Engine, if initialization fails, exit with code 1
-	if(!graphicsEngine.init(argc, argv, width, height)) {
-		return 1;
-	}
-
-	srand(time(NULL));
+void initializeLevel1() {
 	populateLevel1Objs();
 
 	root = graphicsEngine.load_mesh("level1.dae");
@@ -307,14 +277,105 @@ int main(int argc, char** argv) {
 	camera->ProcessMouseMovement(-360.0f, 0.0f);
 	graphicsEngine.setCamera(camera);
 
+	assignLeverComponents(root);
+}
+
+void updateCountdowns() {
+	current_timestamp = clock() - time_started;
+
+	if (mode == WIN || mode == LOSE) {
+		current_timestamp -= winLoseTime;
+	}
+
+	int secondsToType = current_timestamp / 1000;
+	if (mode == PLAY) {
+		secondsToType -= SECONDS_TO_EXPLORE;
+	}
+
+	typeOnScreen(secondsToType);
+
+	if (mode == EXPLORE && secondsToType >= SECONDS_TO_EXPLORE) {
+		mode = PLAY;
+		canActivateLever = true;
+		last_typed = 0;
+		restartPosition();
+		startPlayRound();
+		return;
+	}
+	if (mode == PLAY && secondsToType >= SECONDS_TO_PLAY) {
+		winLoseTime = clock() - time_started;
+		mode = LOSE;
+		last_typed = 0;
+		cout << "You lost, next time will be better!" << endl;
+		cout << "The game will restart in " << SECONDS_BEFORE_NEW_GAME << " seconds" << endl;
+		return;
+	}
+	if ((mode == WIN || mode == LOSE) && secondsToType >= SECONDS_BEFORE_NEW_GAME) {
+		resetLevel1();
+		initializeLevel1();
+	}
+}
+
+void checkIfObjectHasBeenFound(string name) {
+	vec3 v1 = vec3(objectToFindMatrix->m[12], 0.0f, objectToFindMatrix->m[14]);
+	vec3 v2 = vec3(camera->position.x, 0.0f, camera->position.z);
+	if (euclideanDistance(v1, v2) < 1.5f) {
+		removeChildByName(root, name);
+		cout << "You found the " << name << endl;
+		cout << "Congratulations!" << endl;
+		level1ObjsIndex++;
+	}
+}
+
+void gameWin() {
+	cout << "Victory!!!" << endl;
+	cout << "The game will restart in " << SECONDS_BEFORE_NEW_GAME << " seconds" << endl;
+	winLoseTime = clock() - time_started;
+	mode = WIN;
+	last_typed = 0;
+}
+
+void gameplay() {
+	if (mode == PLAY) {
+		if (lastLevel1ObjsIndex != level1ObjsIndex) {
+			lastLevel1ObjsIndex = level1ObjsIndex;
+
+			// Select new object if possible
+			if (level1ObjsIndex < level1ObjsSize) {
+				cout << "Find the " << level1Objs[level1ObjsIndex] << endl;
+				objectToFind = findByName(root, level1Objs[level1ObjsIndex]);
+				std::vector<mat4> matrixHierarchy = {};
+				objectToFindMatrix = findMatrixByNameOfNode(root, level1Objs[level1ObjsIndex], matrixHierarchy);
+			}
+		}
+
+		if (level1ObjsIndex < level1ObjsSize) {
+			checkIfObjectHasBeenFound(level1Objs[level1ObjsIndex]);
+		}
+		else {
+			gameWin();
+		}
+	}
+}
+
+int main(int argc, char** argv) {
+	//Create the Graphics Engine
+	graphicsEngine = GraphicsEngine{};
+
+	//Initialize Graphics Engine, if initialization fails, exit with code 1
+	if(!graphicsEngine.init(argc, argv, width, height)) {
+		return 1;
+	}
+
+	srand(time(NULL));
+	initializeLevel1();
+
 	glutIdleFunc(updateScene);
 	glutMouseFunc(mouseCallback);
 	glutMotionFunc(cameraUpdateMouse);
 	glutKeyboardFunc(keyboardCallback);
 
-	assignLeverComponents(root);
-
-	cout << "Welcome to the Labyrinth!\n" << endl;
+	cout << "Welcome to the Labyrinth!" << endl;
 	cout << "You have " << SECONDS_TO_EXPLORE << " seconds to explore" << endl;
 	cout << "You cannot pull levers at this point" << endl;
 	time_started = clock();
