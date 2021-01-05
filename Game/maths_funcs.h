@@ -6,6 +6,12 @@
 #define ONE_DEG_IN_RAD (2.0f * M_PI) / 360.0f // 0.017444444
 #define ONE_RAD_IN_DEG 57.2957795
 
+#include <vector>
+// GLM Mathemtics
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 struct vec2;
 struct vec3;
 struct vec4;
@@ -137,4 +143,7 @@ versor slerp (const versor& q, const versor& r);
 versor normalise (versor& q);
 void print (const versor& q);
 versor slerp (versor& q, versor& r, float t);
+mat4 toMathFunctionLib(glm::mat4 m);
+glm::mat4 toGlm(mat4 mat);
+mat4 computeMatrix(std::vector<mat4> matrixHierarchy);
 #endif

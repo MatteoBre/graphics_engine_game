@@ -670,3 +670,29 @@ versor slerp (versor& q, versor& r, float t) {
 	}
 	return result;
 }
+
+mat4 toMathFunctionLib(glm::mat4 m) {
+	return mat4(m[0][0], m[1][0], m[2][0], m[3][0],
+		m[0][1], m[1][1], m[2][1], m[3][1],
+		m[0][2], m[1][2], m[2][2], m[3][2],
+		m[0][3], m[1][3], m[2][3], m[3][3]
+	);
+}
+
+glm::mat4 toGlm(mat4 mat)
+{
+	float* m = mat.m;
+	return glm::mat4(
+		m[0], m[1], m[2], m[3],
+		m[4],m[5], m[6], m[7],
+		m[8], m[9], m[10], m[11],
+		m[12], m[13], m[14], m[15]);
+}
+
+mat4 computeMatrix(std::vector<mat4> matrixHierarchy) {
+	mat4 result = identity_mat4();
+	for (int i = matrixHierarchy.size() - 1; i >= 0; i--) {
+		result = matrixHierarchy.at(i) * result;
+	}
+	return result;
+}

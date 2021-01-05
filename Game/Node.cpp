@@ -13,6 +13,11 @@ void Node::setName(std::string name)
 	this->name = name;
 }
 
+std::string Node::getName()
+{
+	return name;
+}
+
 void Node::addChild(Node* child)
 {
 	children.push_back(child);
@@ -36,6 +41,11 @@ std::vector<Node*> Node::getChildren()
 mat4 Node::getMatrix()
 {
 	return matrix;
+}
+
+void Node::setMatrix(mat4 matrix)
+{
+	this->matrix = matrix;
 }
 
 void Node::draw(mat4 matrix)
