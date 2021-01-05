@@ -269,7 +269,7 @@ void restartPosition() {
 }
 
 void startPlayRound() {
-	cout << "You can start playing now, find all the objects/animals"<< endl;
+	cout << "You can start playing now, find all the objects/animals in "<< SECONDS_TO_PLAY << " seconds" << endl;
 	cout << "Good Luck!" << endl;
 }
 
