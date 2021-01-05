@@ -5,8 +5,8 @@
       <author>Blender User</author>
       <authoring_tool>Blender 2.90.1 commit date:2020-09-23, commit time:06:43, hash:3e85bb34d0d7</authoring_tool>
     </contributor>
-    <created>2021-01-05T06:13:34</created>
-    <modified>2021-01-05T06:13:34</modified>
+    <created>2021-01-05T13:12:33</created>
+    <modified>2021-01-05T13:12:33</modified>
     <unit name="meter" meter="1"/>
     <up_axis>Z_UP</up_axis>
   </asset>
@@ -1721,9 +1721,9 @@
         <matrix sid="transform">-0.2908646 -0.7711008 0.5663932 -9.087 0.9551712 -0.1998834 0.2183912 8.825654 -0.05518906 0.6045247 0.7946723 2.288258 0 0 0 1</matrix>
         <instance_light url="#Light_001-light"/>
       </node>
-      <node id="cat" name="cat" type="NODE">
+      <node id="Cat" name="Cat" type="NODE">
         <matrix sid="transform">-0.004 3.49691e-10 0 8.961911 -3.49691e-10 -0.004 0 -3.290677 0 0 0.004 -0.03258174 0 0 0 1</matrix>
-        <instance_geometry url="#ID5-mesh" name="cat">
+        <instance_geometry url="#ID5-mesh" name="Cat">
           <bind_material>
             <technique_common>
               <instance_material symbol="Mat_001-material" target="#Mat_001-material">
@@ -1737,9 +1737,9 @@
         <matrix sid="transform">-0.008031143 0.004679379 0.003688381 0.1777942 0.005958249 0.006306064 0.00497321 0.3161264 1.23652e-6 0.006191685 -0.007852581 -0.3662294 0 0 0 1</matrix>
         <instance_camera url="#Camera_001-camera"/>
       </node>
-      <node id="Pommeau" name="Pommeau" type="NODE">
+      <node id="Sword" name="Sword" type="NODE">
         <matrix sid="transform">0.02391615 0.01655485 -0.007345389 6.673888 0.001466524 0.01035701 0.02811728 8.591372 0.01805179 -0.02277431 0.007447391 1.366209 0 0 0 1</matrix>
-        <instance_geometry url="#Plane_022-mesh" name="Pommeau">
+        <instance_geometry url="#Plane_022-mesh" name="Sword">
           <bind_material>
             <technique_common>
               <instance_material symbol="Metal-material" target="#Metal-material">
@@ -1785,7 +1785,7 @@
           </instance_geometry>
         </node>
       </node>
-      <node id="deer" name="deer" type="NODE">
+      <node id="Deer" name="Deer" type="NODE">
         <matrix sid="transform">-8.30516e-11 -0.0019 0 -0.93925 0.0019 -8.30516e-11 0 -9.189063 0 0 0.0019 0.057079 0 0 0 1</matrix>
         <node id="grp1_2" name="grp1_2" type="NODE">
           <matrix sid="transform">1 -3.55271e-15 0 63.30811 3.55271e-15 1 -4.44089e-16 240.9965 0 4.44089e-16 1 -43.41321 0 0 0 0.9999999</matrix>

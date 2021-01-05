@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <vector> // STL dynamic memory.
+#include <time.h>
 
 #include "Camera.h"
 
@@ -32,6 +33,8 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #define SPEED 0.02f
+#define SECONDS_TO_EXPLORE 2
+#define SECONDS_TO_PLAY 40
 
 using namespace std;
 GLuint shaderProgramID;
@@ -49,7 +52,23 @@ Node* lever;
 mat4* leverMatrix;
 Node* leverHandle;
 bool leverActivated = false;
+bool canActivateLever = false;
 float leverAngle = 0.0f;
+
+// Objects to find
+int level1ObjsIndex = 0;
+int lastLevel1ObjsIndex = -1;
+string level1Objs[3];
+
+// Countdown
+clock_t time_started;
+clock_t current_timestamp;
+int last_typed = 0;
+
+enum Mode {
+	EXPLORE, PLAY
+};
+Mode mode = EXPLORE;
 
 bool removeChildByName(Node* root, string name) {
 	if (root == NULL)
@@ -125,7 +144,6 @@ void assignLeverComponents(Node* root) {
 	leverHandle = findByName(root, "Handle");
 	std::vector<mat4> matrixHierarchy = {};
 	leverMatrix = findMatrixByNameOfNode(root, "Lever", matrixHierarchy);
-	std::cout << leverMatrix;
 }
 
 void updateScene() {
@@ -162,11 +180,12 @@ void keyboardCallback(unsigned char key, int x, int y) {
 	if (key == 'd') {
 		camera->ProcessKeyboard(RIGHT, SPEED);
 	}
-	if (key == 'l') {
+	if (key == 'l' && canActivateLever) {
 		vec3 v1 = vec3(leverMatrix->m[12], leverMatrix->m[13], leverMatrix->m[14]);
 		vec3 v2 = vec3(camera->position.x, camera->position.y, camera->position.z);
-		if (euclideanDistance(v1, v2) < 1.5f) {
+		if (euclideanDistance(v1, v2) < 1.5f && !leverActivated) {
 			leverActivated = true;
+			cout << "Lever activated! A new passage is available." << endl;
 		}
 	}
 }
@@ -191,6 +210,81 @@ void cameraUpdateMouse(int x, int y) {
 	camera->ProcessMouseMovement(xOffset, yOffset);
 }
 
+void populateLevel1Objs() {
+	vector<string> values = {};
+	values.push_back("Cat");
+	values.push_back("Deer");
+	values.push_back("Sword");
+
+	int index;
+	for (int i = 0; i < 3; i++) {
+		index = rand() % values.size();
+		level1Objs[i] = values.at(index);
+		values.erase(values.begin() + index);
+	}
+}
+
+void resetLevel1() {
+	leverActivated = false;
+
+	glm::mat4 leverHandleMatrix = toGlm(leverHandle->getMatrix());
+	leverHandleMatrix = glm::rotate(leverHandleMatrix, 6.28f - leverAngle, glm::vec3(1.0f, 0.0f, 0.0f));
+	leverHandle->setMatrix(toMathFunctionLib(leverHandleMatrix));
+
+	leverAngle = 0.0f;
+
+	level1ObjsIndex = 0;
+	populateLevel1Objs();
+
+	mode = EXPLORE;
+	canActivateLever = false;
+}
+
+void restartPosition() {
+	camera->position = glm::vec3(9.0f, 1.8f, 0.0f);
+}
+
+void startPlayRound() {
+	cout << "You can start playing now, find all the objects/animals"<< endl;
+	cout << "Good Luck!" << endl;
+}
+
+void typeOnScreen(int val) {
+	if (val == last_typed) {
+		return;
+	}
+	last_typed = val;
+	cout << last_typed << endl;
+}
+
+void updateCountdowns() {
+	current_timestamp = clock() - time_started;
+
+	if (current_timestamp > SECONDS_TO_EXPLORE * 1000 && mode != PLAY) {
+		mode = PLAY;
+		canActivateLever = true;
+		last_typed = 0;
+		restartPosition();
+		startPlayRound();
+	}
+
+	int secondsToType = current_timestamp / 1000;
+	if (mode != EXPLORE) {
+		secondsToType -= SECONDS_TO_EXPLORE;
+	}
+
+	typeOnScreen(secondsToType);
+}
+
+void gameplay() {
+	if (mode == PLAY) {
+		if (lastLevel1ObjsIndex != level1ObjsIndex) {
+			lastLevel1ObjsIndex = level1ObjsIndex;
+			cout << "Find the " << level1Objs[level1ObjsIndex] << endl;
+		}
+	}
+}
+
 int main(int argc, char** argv) {
 	//Create the Graphics Engine
 	GraphicsEngine graphicsEngine = GraphicsEngine{};
@@ -199,6 +293,10 @@ int main(int argc, char** argv) {
 	if(!graphicsEngine.init(argc, argv, width, height)) {
 		return 1;
 	}
+
+	srand(time(NULL));
+	populateLevel1Objs();
+
 	root = graphicsEngine.load_mesh("level1.dae");
 	graphicsEngine.setRootNode(root);
 
@@ -209,25 +307,26 @@ int main(int argc, char** argv) {
 	camera->ProcessMouseMovement(-360.0f, 0.0f);
 	graphicsEngine.setCamera(camera);
 
-	//shaderProgramID = graphicsEngine.shaderProgramID;
-
-	// Tell glut where the display function is
-	//glutDisplayFunc(display);
 	glutIdleFunc(updateScene);
 	glutMouseFunc(mouseCallback);
-	//glutPassiveMotionFunc(cameraUpdate);
 	glutMotionFunc(cameraUpdateMouse);
 	glutKeyboardFunc(keyboardCallback);
 
 	assignLeverComponents(root);
 
-	// Set up your objects and shaders
-	//init();
-	// Begin infinite event loop
+	cout << "Welcome to the Labyrinth!\n" << endl;
+	cout << "You have " << SECONDS_TO_EXPLORE << " seconds to explore" << endl;
+	cout << "You cannot pull levers at this point" << endl;
+	time_started = clock();
+	current_timestamp = clock() - time_started;
+
+	// Loop
 	while (true) {
 		glutMainLoopEvent();
 		glutPostRedisplay();
 		activateLever();
+		updateCountdowns();
+		gameplay();
 	}
 	return 0;
 }
