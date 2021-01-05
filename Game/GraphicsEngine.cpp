@@ -3,7 +3,10 @@
 #include <iostream>
 #include "ModelData.h"
 #include "Node.h"
+#include "Light.h"
 #include "Camera.h"
+#include <set>
+#include <string>
 
 // OpenGL includes
 #include <GL/glew.h>
@@ -44,6 +47,22 @@ void drawTree(Node* root, std::vector<mat4> matrixHierarchy) {
 	matrixHierarchy.pop_back();
 }
 
+void getAllLights(Node* root, std::vector<mat4> matrixHierarchy, std::vector<Light*>& lights, std::vector<mat4>& matrices) {
+	matrixHierarchy.push_back(root->getMatrix());
+
+	if (root->getNodeType() == LIGHT) {
+		lights.push_back(dynamic_cast<Light*>(root));
+		mat4 matrix = computeMatrix(matrixHierarchy);
+		matrices.push_back(matrix);
+	}
+
+	for (Node* child : root->getChildren()) {
+		getAllLights(child, matrixHierarchy, lights, matrices);
+	}
+
+	matrixHierarchy.pop_back();
+}
+
 mat4 toMathFunctionLib(glm::mat4 m) {
 	return mat4(m[0][0], m[1][0], m[2][0], m[3][0],
 		m[0][1], m[1][1], m[2][1], m[3][1],
@@ -73,14 +92,26 @@ void displayFunction()
 	int matrix_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "model");
 	int view_mat_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "view");
 	int proj_mat_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "proj");
+	int light_pos_location = glGetUniformLocation(GraphicsEngine::shaderProgramID, "lightPos");
 
 	// update uniforms & draw
 	glUniformMatrix4fv(proj_mat_location, 1, GL_FALSE, persp_proj.m);
 	glUniformMatrix4fv(view_mat_location, 1, GL_FALSE, view.m);
 	glUniformMatrix4fv(matrix_location, 1, GL_FALSE, model.m);
 
-	//draw
-	drawTree(GraphicsEngine::root, std::vector<mat4>());
+	// Get all lights from the tree
+	std::vector<Light*> lights = {};
+	std::vector<mat4> matrices = {};
+	getAllLights(GraphicsEngine::root, std::vector<mat4>(), lights, matrices);
+	// Draw tree for each light
+	for (int i = 0; i < lights.size(); i++) {
+		Light* light = lights.at(i);
+		mat4 lightMat = matrices.at(i);
+		lightMat = view * lightMat;
+		// 12, 13, 14 of the matrix correspond to the x y z of the light
+		glUniform3f(light_pos_location, lightMat.m[12], lightMat.m[13], lightMat.m[14]);
+		drawTree(GraphicsEngine::root, std::vector<mat4>());
+	}
 
 	glutSwapBuffers();
 }
@@ -122,7 +153,7 @@ static mat4 getMat4(aiMatrix4x4 m) {
 	);
 }
 
-Node* createTree(const aiNode* root, const aiScene* scene) {
+Node* createTree(const aiNode* root, const aiScene* scene, std::set<std::string> lightNames) {
 	ModelData modelData;
 	modelData.mPointCount = 0;
 	bool isMesh = root->mNumMeshes > 0;
@@ -150,16 +181,17 @@ Node* createTree(const aiNode* root, const aiScene* scene) {
 	Node* currentNode;
 	mat4 matrix = getMat4(root->mTransformation);
 	if (isMesh) {
-		std::cout << "Mat num: " << modelData.materialIndex << std::endl;
 		Mesh* mesh = Mesh::fromModelData(modelData, matrix, MESH, GraphicsEngine::shaderProgramID, GraphicsEngine::materials.at(modelData.materialIndex));
 		currentNode = mesh;
 	}
-	else {
+	else if (lightNames.find(root->mName.C_Str()) != lightNames.end()) {
+		currentNode = new Light(matrix);
+	} else {
 		currentNode = new Node(matrix, NODE);
 	}
 
 	for (int i = 0; i < root->mNumChildren; i++) {
-		Node* child = createTree(root->mChildren[i], scene);
+		Node* child = createTree(root->mChildren[i], scene, lightNames);
 		currentNode->addChild(child);
 	}
 
@@ -186,14 +218,18 @@ Node* GraphicsEngine::load_mesh(const char* file_name) {
 	for (int i = 0; i < scene->mNumMaterials; i++) {
 		material = scene->mMaterials[i];
 		materials.push_back(Material::fromAiMaterial(material, GraphicsEngine::shaderProgramID));
-		std::cout << material->GetTextureCount(aiTextureType_DIFFUSE) << std::endl;
 	}
 
-	Node* treeRoot = createTree(assimpRoot, scene);
+	// Lights
+	std::set<std::string> lightNames;
+	for (int i = 0; i < scene->mNumLights; i++) {
+		lightNames.insert(scene->mLights[i]->mName.C_Str());
+	}
+
+	Node* treeRoot = createTree(assimpRoot, scene, lightNames);
 
 	// Textures extraction
 	aiTexture* texture;
-	std::cout << "Textures: "<< scene->mNumTextures << std::endl;
 	for (int i = 0; i < scene->mNumTextures; i++) {
 		texture = scene->mTextures[i];
 	}

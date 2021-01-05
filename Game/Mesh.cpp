@@ -5,8 +5,8 @@
 
 #include <iostream>
 
-Mesh::Mesh(mat4 matrix, NodeType nodeType, Material* material)
-	: Node(matrix, nodeType)
+Mesh::Mesh(mat4 matrix, Material* material)
+	: Node(matrix, MESH)
 {
 	this->material = material;
 }
@@ -58,7 +58,7 @@ void Mesh::init(GLuint shaderProgramID) {
 
 Mesh* Mesh::fromModelData(ModelData modelData, mat4 matrix, NodeType nodeType, GLuint shaderProgramID, Material* material)
 {
-	Mesh* mesh = new Mesh{matrix, nodeType, material};
+	Mesh* mesh = new Mesh{matrix, material};
 	mesh->data = modelData;
 	mesh->init(shaderProgramID);
 	return mesh;

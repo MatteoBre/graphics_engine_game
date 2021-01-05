@@ -4,7 +4,8 @@
 
 enum NodeType {
 	NODE,
-	MESH
+	MESH,
+	LIGHT
 };
 
 class Node

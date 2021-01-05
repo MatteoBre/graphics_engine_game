@@ -9,7 +9,7 @@
 class Mesh : public Node
 {
 	public:
-		Mesh(mat4 matrix, NodeType nodeType, Material* material);
+		Mesh(mat4 matrix, Material* material);
 		static Mesh* fromModelData(ModelData modelData, mat4 matrix, NodeType nodeType, GLuint shaderProgramID, Material* material);
 		virtual void draw(mat4 matrix);
 
