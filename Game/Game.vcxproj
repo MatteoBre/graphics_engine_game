@@ -135,6 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Boundary.cpp" />
     <ClCompile Include="GraphicsEngine.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
@@ -144,6 +145,7 @@
     <ClCompile Include="Node.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Boundary.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="GraphicsEngine.h" />
     <ClInclude Include="Light.h" />

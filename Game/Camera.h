@@ -2,6 +2,7 @@
 
 // Std. Includes
 #include <vector>
+#include "Boundary.h"
 
 // GL Includes
 #include <GL/glew.h>
@@ -65,6 +66,7 @@ public:
     void ProcessKeyboard( Camera_Movement direction, GLfloat deltaTime )
     {
         GLfloat velocity = this->movementSpeed * deltaTime;
+        glm::vec3 backup = this->position;
         
         if ( direction == FORWARD )
         {
@@ -86,6 +88,10 @@ public:
             this->position += this->right * velocity;
         }
 
+        //std::cout << this->position.x << " " << this->position.z << " " << std::endl;
+        if (boundaries != NULL && !boundaries->isInBoundary(vec2(this->position.x, this->position.z))) {
+            this->position = backup;
+        }
 		if (this->fixYPosition) {
 			this->position.y = this->yPosition;
 		}
@@ -146,6 +152,10 @@ public:
     {
         return this->zoom;
     }
+
+    void setBoundaries(Boundary* boundaries) {
+        this->boundaries = boundaries;
+    }
     
 private:
     // Camera Attributes
@@ -166,6 +176,9 @@ private:
 	// Fixed Y position
 	bool fixYPosition;
 	float yPosition;
+
+    // Boundary
+    Boundary* boundaries = NULL;
     
     // Calculates the front vector from the Camera's (updated) Eular Angles
     void updateCameraVectors( )

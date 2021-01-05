@@ -11,6 +11,7 @@
 #include <time.h>
 
 #include "Camera.h"
+#include "Boundary.h"
 
 // OpenGL includes
 #include <GL/glew.h>
@@ -48,6 +49,7 @@ int height = 600;
 Camera* camera;
 Node* root;
 GraphicsEngine graphicsEngine;
+Boundary* boundaries;
 
 // Lever variables
 Node* lever;
@@ -192,6 +194,7 @@ void keyboardCallback(unsigned char key, int x, int y) {
 		if (euclideanDistance(v1, v2) < 1.5f && !leverActivated) {
 			leverActivated = true;
 			cout << "Lever activated! A new passage is available." << endl;
+			boundaries->squares.push_back({ vec2(0.1f, 0.9f), vec2(1.9f, 9.9f) });
 		}
 	}
 }
@@ -264,7 +267,24 @@ void typeOnScreen(int val) {
 	cout << last_typed << endl;
 }
 
+Boundary* setUpBoundaries() {
+	std::vector<Square> squares = {};
+
+	squares.push_back({ vec2(1.9f, -0.9f), vec2(9.9f, 0.9f) });
+	squares.push_back({ vec2(6.1f, -9.9f), vec2(7.9f, -0.9f) });
+	squares.push_back({ vec2(0.1f, -9.9f), vec2(1.9f, 0.9f) });
+	squares.push_back({ vec2(-9.9f, -9.9f), vec2(0.1f, -8.1f) });
+	squares.push_back({ vec2(-9.9f, -8.1f), vec2(-8.1f, 9.9f) });
+	squares.push_back({ vec2(-8.1f, 8.1f), vec2(-0.4f, 9.9f) });
+
+	squares.push_back({ vec2(1.9f, 8.1f), vec2(9.9f, 9.9f) });
+	squares.push_back({ vec2(8.1f, 1.4f), vec2(9.9f, 8.1f) });
+
+	return new Boundary(squares);
+}
+
 void initializeLevel1() {
+	boundaries = setUpBoundaries();
 	populateLevel1Objs();
 
 	root = graphicsEngine.load_mesh("level1.dae");
@@ -272,6 +292,7 @@ void initializeLevel1() {
 
 	camera = new Camera{ glm::vec3(9.0f, 1.8f, 0.0f) };
 	camera->fixPositionInY(1.8f);
+	camera->setBoundaries(boundaries);
 
 	// Mouse sensitivity is 0.25, I need a -90 degrees rotation, so -90/0.25 = -360
 	camera->ProcessMouseMovement(-360.0f, 0.0f);
